@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const { Kafka } = require('kafkajs');
 
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.PORT || '8080');
 
 // Setup Middlewares
 app.use(bodyParser.json());
