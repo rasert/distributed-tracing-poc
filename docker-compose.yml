@@ -58,28 +58,28 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8085"
+      #KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8085"
       KAFKA_JMX_PORT: 9991
     volumes:
       - ./volumes/kafka/data:/var/lib/kafka/data
 
-  schemaregistry:
-    image: confluentinc/cp-schema-registry:5.1.2
-    restart: always
-    depends_on:
-      - zookeeper
-    environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
-      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
-      SCHEMA_REGISTRY_LISTENERS: "http://schemaregistry:8085"
-    ports:
-      - "8085:8085"
+  # schemaregistry:
+  #   image: confluentinc/cp-schema-registry:5.1.2
+  #   restart: always
+  #   depends_on:
+  #     - zookeeper
+  #   environment:
+  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+  #     SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+  #     SCHEMA_REGISTRY_LISTENERS: "http://schemaregistry:8085"
+  #   ports:
+  #     - "8085:8085"
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:7.1.1
     depends_on:
       - kafka1
-      - schemaregistry
+      #- schemaregistry
     ports:
       - 8082:8082
     hostname: rest-proxy
@@ -88,7 +88,7 @@ services:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'kafka1:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
-      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schemaregistry:8085'
+      #KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schemaregistry:8085'
       KAFKA_REST_MAX_POLL_INTERVAL_MS: 300000
       #KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS: 90000
 
@@ -100,6 +100,6 @@ services:
     environment:
       KAFKA_BROKERCONNECT: "kafka1:9092"
       JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
-      CMD_ARGS: "--schemaregistry.connect=http://schemaregistry:8085 --message.format=AVRO"
+      #CMD_ARGS: "--schemaregistry.connect=http://schemaregistry:8085 --message.format=AVRO"
     depends_on:
       - kafka1
