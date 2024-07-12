@@ -30,7 +30,7 @@ namespace Consumer.Api
             {
                 try
                 {
-                    _ = _consumer.ConsumeWithInstrumentation((result, cancelToken) =>
+                    await _consumer.ConsumeWithInstrumentation((result, cancelToken) =>
                     {
                         if (!cancelToken.IsCancellationRequested && result != null)
                         {
