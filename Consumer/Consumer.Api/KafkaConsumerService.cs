@@ -24,13 +24,15 @@ namespace Consumer.Api
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Yield();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    await _consumer.ConsumeWithInstrumentation((result, stoppingToken) =>
+                    _ = _consumer.ConsumeWithInstrumentation((result, cancelToken) =>
                     {
-                        if (!stoppingToken.IsCancellationRequested && result != null)
+                        if (!cancelToken.IsCancellationRequested && result != null)
                         {
                             string text = result?.Message.Value ?? string.Empty;
                             _logger.LogInformation($"Consumed message '{text}' at: '{result?.TopicPartitionOffset}'.");
@@ -45,8 +47,6 @@ namespace Consumer.Api
                 {
                     _logger.LogError($"Error occured: {e.Error.Reason}");
                 }
-
-                await Task.Delay(1000, stoppingToken);
             }
         }
 

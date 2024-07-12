@@ -1,5 +1,6 @@
 using Confluent.Kafka.Extensions.OpenTelemetry;
 using Consumer.Api;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -15,17 +16,29 @@ builder.Logging.AddOpenTelemetry(options =>
         .SetResourceBuilder(
             ResourceBuilder.CreateDefault()
                 .AddService(serviceName))
-        .AddOtlpExporter();
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4318/v1/logs");
+            options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        });
 });
 builder.Services.AddOpenTelemetry()
-      .ConfigureResource(resource => resource.AddService(serviceName))
-      .WithTracing(tracing => tracing
-          .AddAspNetCoreInstrumentation()
-          .AddConfluentKafkaInstrumentation()
-          .AddOtlpExporter())
-      .WithMetrics(metrics => metrics
-          .AddAspNetCoreInstrumentation()
-          .AddOtlpExporter());
+    .ConfigureResource(resource => resource.AddService(serviceName))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddConfluentKafkaInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+            options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
+            options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
