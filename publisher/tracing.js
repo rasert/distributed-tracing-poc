@@ -1,24 +1,59 @@
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
+const { KafkaJsInstrumentation } = require('@opentelemetry/instrumentation-kafkajs');
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-proto');
-const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-proto');
-const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
+const { Resource } = require('@opentelemetry/resources');
+const { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_SERVICE_VERSION } = require('@opentelemetry/semantic-conventions');
+
+const {
+    envDetectorSync,
+    hostDetectorSync,
+    processDetectorSync,
+} = require("@opentelemetry/resources");
+
+function awaitAttributes(detector) {
+    return {
+        async detect(config) {
+            const resource = detector.detect(config)
+            await resource.waitForAsyncAttributes?.()
+
+            return resource
+        },
+    }
+}
+
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
+// For troubleshooting, set the log level to DiagLogLevel.DEBUG
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
 const sdk = new NodeSDK({
+    resourceDetectors: [
+        awaitAttributes(envDetectorSync),
+        awaitAttributes(processDetectorSync),
+        awaitAttributes(hostDetectorSync),
+    ],
+    resource: new Resource({
+        [SEMRESATTRS_SERVICE_NAME]: 'publisher',
+        [SEMRESATTRS_SERVICE_VERSION]: '1.0.0',
+        env: process.env.NODE_ENV || '',
+    }),
     traceExporter: new OTLPTraceExporter({
         // optional - default url is http://localhost:4318/v1/traces
         //url: 'http://localhost:9193/v1/traces',
         // optional - collection of custom headers to be sent with each request, empty by default
         headers: {},
     }),
-    metricReader: new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporter({
-            //url: '<your-otlp-endpoint>/v1/metrics', // url is optional and can be omitted - default is http://localhost:4318/v1/metrics
-            headers: {}, // an optional object containing custom headers to be sent with each request
-            concurrencyLimit: 1, // an optional limit on pending requests
+    instrumentations: [
+        getNodeAutoInstrumentations({
+            '@opentelemetry/instrumentation-fs': {
+                enabled: false,
+            },
+            '@opentelemetry/instrumentation-net': {
+                enabled: false,
+            }
         }),
-    }),
-    instrumentations: [getNodeAutoInstrumentations()],
+        new KafkaJsInstrumentation()
+    ],
 });
 
 sdk.start();
