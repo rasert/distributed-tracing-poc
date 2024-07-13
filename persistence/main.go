@@ -10,7 +10,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.POST("/save-text", saveTextHandler)
-	r.Run(":8080")
+	r.Run(":8888")
 }
 
 func saveTextHandler(c *gin.Context) {
