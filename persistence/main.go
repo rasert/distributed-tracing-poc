@@ -1,14 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func main() {
+	SetupTelemetry(context.Background())
+
 	r := gin.Default()
+	r.Use(otelgin.Middleware("persistence-api"))
 	r.POST("/save-text", saveTextHandler)
 	r.Run(":8888")
 }
