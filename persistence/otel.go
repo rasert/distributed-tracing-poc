@@ -18,11 +18,11 @@ func SetupTelemetry(ctx context.Context) {
 		log.Fatal(err)
 	}
 
-	// TODO: fix ServiceName attribute
 	tp := trace.NewTracerProvider(
 		trace.WithBatcher(otlp_exporter),
 		trace.WithResource(resource.NewWithAttributes(
-			semconv.ServiceName("persistence-api").Value.AsString(),
+			semconv.SchemaURL,
+			semconv.ServiceName("persistence-api"),
 		)),
 	)
 
