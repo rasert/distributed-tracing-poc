@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.8'
 services:
   jaeger:
     image: jaegertracing/all-in-one:1.46
@@ -14,18 +14,36 @@ services:
       - "14268:14268"
       - "14250:14250"
       - "16686:16686"
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
     environment:
-      SA_PASSWORD: "SqlServer2019!"
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test:  echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    depends_on:
+      mongo:
+        condition: service_healthy
     ports:
-      - "1433:1433"
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH: false
   
   zookeeper:
     image: confluentinc/cp-zookeeper:5.1.2
@@ -103,3 +121,6 @@ services:
       #CMD_ARGS: "--schemaregistry.connect=http://schemaregistry:8085 --message.format=AVRO"
     depends_on:
       - kafka1
+
+volumes:
+  mongo-data:
