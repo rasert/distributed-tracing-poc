@@ -10,11 +10,12 @@ import (
 	// "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"go.opentelemetry.io/otel/sdk/trace"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.20.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func SetupTelemetry(ctx context.Context) {
+func SetupTelemetry(ctx context.Context) trace.Tracer {
 	// stdout_exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -24,10 +25,10 @@ func SetupTelemetry(ctx context.Context) {
 		log.Fatal(err)
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(otlp_exporter),
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(otlp_exporter),
 		// trace.WithBatcher(stdout_exporter),
-		trace.WithResource(resource.NewWithAttributes(
+		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName("persistence-api"),
 		)),
@@ -40,4 +41,6 @@ func SetupTelemetry(ctx context.Context) {
 			propagation.Baggage{},
 		),
 	)
+
+	return tp.Tracer("persistence-api")
 }

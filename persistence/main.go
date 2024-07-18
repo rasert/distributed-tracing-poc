@@ -11,10 +11,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func main() {
-	SetupTelemetry(context.Background())
+	tracer := SetupTelemetry(context.Background())
 
 	client, err := repositories.InitializeMongoClient("mongodb://root:example@localhost:27017")
 	if err != nil {
@@ -27,12 +28,15 @@ func main() {
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware("persistence-api"))
-	r.POST("/save-text", saveTextHandler(repo))
+	r.POST("/save-text", saveTextHandler(repo, tracer))
 	r.Run(":8888")
 }
 
-func saveTextHandler(repo abstractions.TextRepository) gin.HandlerFunc {
+func saveTextHandler(repo abstractions.TextRepository, tracer trace.Tracer) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx, span := tracer.Start(c.Request.Context(), "saveTextHandler")
+		defer span.End()
+
 		var request struct {
 			Text string `json:"text"`
 		}
@@ -41,13 +45,17 @@ func saveTextHandler(repo abstractions.TextRepository) gin.HandlerFunc {
 			return
 		}
 
+		span.AddEvent("Bind ok")
+
 		// Save the text to a database
 		newDoc := &abstractions.TextDocument{Text: request.Text}
-		err := repo.Insert(c.Request.Context(), newDoc)
+		err := repo.Insert(ctx, newDoc)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+
+		span.AddEvent("Document saved")
 
 		c.JSON(http.StatusOK, gin.H{"status": fmt.Sprintf("Text '%s' saved", request.Text)})
 	}
