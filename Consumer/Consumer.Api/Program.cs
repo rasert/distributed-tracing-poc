@@ -45,6 +45,8 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<Instrumentation>();
+
 builder.Services.AddHostedService<KafkaConsumerService>();
 
 var app = builder.Build();

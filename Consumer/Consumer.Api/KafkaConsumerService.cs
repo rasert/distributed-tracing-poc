@@ -1,6 +1,6 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Extensions.Diagnostics;
-using System.Net.Http;
+using System.Diagnostics;
 using System.Text;
 
 namespace Consumer.Api
@@ -10,8 +10,9 @@ namespace Consumer.Api
         private readonly IConsumer<Ignore, string> _consumer;
         private readonly ILogger<KafkaConsumerService> _logger;
         private readonly HttpClient _httpClient;
+        private readonly ActivitySource _activitySource;
 
-        public KafkaConsumerService(IConfiguration configuration, ILogger<KafkaConsumerService> logger)
+        public KafkaConsumerService(IConfiguration configuration, ILogger<KafkaConsumerService> logger, Instrumentation instrumentation)
         {
             var config = new ConsumerConfig
             {
@@ -24,6 +25,7 @@ namespace Consumer.Api
             _consumer.Subscribe("text-topic");
             _logger = logger;
             _httpClient = new HttpClient();
+            _activitySource = instrumentation.ActivitySource;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,14 +40,21 @@ namespace Consumer.Api
                     {
                         if (!cancelToken.IsCancellationRequested && result != null)
                         {
+                            // This creates a Span to be sent to the OpenTelemetry Collector.
+                            using var activity = _activitySource.StartActivity("ConsumeMessage");
+
                             string text = result?.Message.Value ?? string.Empty;
                             _logger.LogInformation($"Consumed message '{text}' at: '{result?.TopicPartitionOffset}'.");
+
+                            activity?.AddEvent(new("Message consumed. Sending to Persistence API"));
 
                             var content = new StringContent($"{{ \"text\": \"{text}\" }}", Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync("http://localhost:8888/save-text", content, cancelToken);
 
                             if (response.IsSuccessStatusCode)
                             {
+                                activity?.AddEvent(new("Persistence API responded OK"));
+
                                 _logger.LogInformation("HTTP POST request was successful.");
                             }
                             else
