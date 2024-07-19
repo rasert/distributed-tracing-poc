@@ -1,6 +1,13 @@
 version: '3.8'
 services:
 
+  publisher:
+    build:
+      context: ./publisher
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
   consumer:
     build:
       context: ./Consumer
