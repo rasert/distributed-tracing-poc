@@ -17,7 +17,7 @@ import (
 func main() {
 	tracer := SetupTelemetry(context.Background())
 
-	client, err := repositories.InitializeMongoClient("mongodb://root:example@localhost:27017")
+	client, err := repositories.InitializeMongoClient("mongodb://root:example@mongo:27017")
 	if err != nil {
 		log.Fatal(err)
 	}

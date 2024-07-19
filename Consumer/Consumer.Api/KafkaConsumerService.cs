@@ -69,6 +69,10 @@ namespace Consumer.Api
                 {
                     _logger.LogError($"Error occured: {e.Error.Reason}");
                 }
+                catch (HttpRequestException e)
+                {
+                    _logger.LogError(e, $"Unable to send text to persistence service: {e.Message}");
+                }
             }
         }
 

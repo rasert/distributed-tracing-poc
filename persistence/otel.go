@@ -20,7 +20,7 @@ func SetupTelemetry(ctx context.Context) trace.Tracer {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	otlp_exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL("http://localhost:4318/v1/traces"))
+	otlp_exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL("http://jaeger:4318/v1/traces"))
 	if err != nil {
 		log.Fatal(err)
 	}

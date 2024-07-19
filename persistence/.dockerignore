@@ -1,0 +1,41 @@
+# Ignorar arquivos binários
+/bin
+/bin/*
+
+# Ignorar diretório de build
+/build
+/build/*
+
+# Ignorar artefatos de teste
+*.out
+*.test
+
+# Ignorar dependências baixadas (se usa vendor)
+vendor/
+
+# Ignorar arquivos de controle de versão
+.git
+.git/*
+.gitattributes
+.gitignore
+
+# Ignorar arquivos de configuração do IDE/editor
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# Ignorar arquivos temporários e logs
+*.log
+*.swp
+*.tmp
+*.bak
+*.old
+
+# Ignorar caches
+*.cache
+*.o
+*.a
+
+# Ignorar módulos e pacotes
+node_modules/
