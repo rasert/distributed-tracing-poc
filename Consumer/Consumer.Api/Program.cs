@@ -18,7 +18,7 @@ builder.Logging.AddOpenTelemetry(options =>
                 .AddService(serviceName))
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4318/v1/logs");
+            options.Endpoint = new Uri("http://jaeger:4318/v1/logs");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         });
 });
@@ -29,14 +29,14 @@ builder.Services.AddOpenTelemetry()
         .AddConfluentKafkaInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+            options.Endpoint = new Uri("http://jaeger:4318/v1/traces");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         }))
     .WithMetrics(metrics => metrics
         .AddAspNetCoreInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
+            options.Endpoint = new Uri("http://jaeger:4318/v1/metrics");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         }));
 

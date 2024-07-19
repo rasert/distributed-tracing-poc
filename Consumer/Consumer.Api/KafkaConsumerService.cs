@@ -49,7 +49,7 @@ namespace Consumer.Api
                             activity?.AddEvent(new("Message consumed. Sending to Persistence API"));
 
                             var content = new StringContent($"{{ \"text\": \"{text}\" }}", Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PostAsync("http://localhost:8888/save-text", content, cancelToken);
+                            var response = await _httpClient.PostAsync("http://persistence:8888/save-text", content, cancelToken);
 
                             if (response.IsSuccessStatusCode)
                             {
