@@ -7,6 +7,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 const string serviceName = "consumer";
+const string serviceVersion = "1.0.0";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Logging.AddOpenTelemetry(options =>
     options
         .SetResourceBuilder(
             ResourceBuilder.CreateDefault()
-                .AddService(serviceName))
+                .AddService(serviceName, serviceVersion: serviceVersion))
         .AddOtlpExporter(options =>
         {
             options.Endpoint = new Uri("http://jaeger:4318/v1/logs");
@@ -23,7 +24,7 @@ builder.Logging.AddOpenTelemetry(options =>
         });
 });
 builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService(serviceName))
+    .ConfigureResource(resource => resource.AddService(serviceName, serviceVersion: serviceVersion))
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()

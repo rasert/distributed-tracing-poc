@@ -8,7 +8,7 @@ namespace Consumer.Api
     /// </summary>
     public class Instrumentation : IDisposable
     {
-        internal const string ActivitySourceName = "dice-server";
+        internal const string ActivitySourceName = "consumer";
         internal const string ActivitySourceVersion = "1.0.0";
 
         public Instrumentation()
