@@ -26,6 +26,7 @@ builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource.AddService(serviceName))
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
         .AddConfluentKafkaInstrumentation()
         .AddOtlpExporter(options =>
         {
@@ -34,6 +35,7 @@ builder.Services.AddOpenTelemetry()
         }))
     .WithMetrics(metrics => metrics
         .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
         .AddOtlpExporter(options =>
         {
             options.Endpoint = new Uri("http://jaeger:4318/v1/metrics");
