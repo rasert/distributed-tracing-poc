@@ -26,6 +26,10 @@ namespace Consumer.Api
             _logger = logger;
             _httpClient = new HttpClient();
             _activitySource = instrumentation.ActivitySource;
+
+            string? persistenceHost = configuration["Persistence:Host"];
+            string? persistencePort = configuration["Persistence:Port"];
+            _httpClient.BaseAddress = new Uri($"http://{persistenceHost}:{persistencePort}");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,7 +53,7 @@ namespace Consumer.Api
                             activity?.AddEvent(new("Message consumed. Sending to Persistence API"));
 
                             var content = new StringContent($"{{ \"text\": \"{text}\" }}", Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PostAsync("http://persistence:8888/save-text", content, cancelToken);
+                            var response = await _httpClient.PostAsync("/save-text", content, cancelToken);
 
                             if (response.IsSuccessStatusCode)
                             {

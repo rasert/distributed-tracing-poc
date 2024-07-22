@@ -11,6 +11,11 @@ const string serviceVersion = "1.0.0";
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load Jaeger configuration
+string? jaegerHost = builder.Configuration["Jaeger:Host"];
+string? jaegerPort = builder.Configuration["Jaeger:Port"];
+string jaegerEndpoint = $"http://{jaegerHost}:{jaegerPort}/v1";
+
 builder.Logging.AddOpenTelemetry(options =>
 {
     options
@@ -19,7 +24,7 @@ builder.Logging.AddOpenTelemetry(options =>
                 .AddService(serviceName, serviceVersion: serviceVersion))
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://jaeger:4318/v1/logs");
+            options.Endpoint = new Uri($"{jaegerEndpoint}/logs");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         });
 });
@@ -31,7 +36,7 @@ builder.Services.AddOpenTelemetry()
         .AddConfluentKafkaInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://jaeger:4318/v1/traces");
+            options.Endpoint = new Uri($"{jaegerEndpoint}/traces");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         }))
     .WithMetrics(metrics => metrics
@@ -39,7 +44,7 @@ builder.Services.AddOpenTelemetry()
         .AddHttpClientInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://jaeger:4318/v1/metrics");
+            options.Endpoint = new Uri($"{jaegerEndpoint}/metrics");
             options.Protocol = OtlpExportProtocol.HttpProtobuf;
         }));
 
