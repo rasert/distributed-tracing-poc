@@ -6,9 +6,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-const string serviceName = "consumer";
-const string serviceVersion = "1.0.0";
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Load Jaeger configuration
@@ -21,7 +18,7 @@ builder.Logging.AddOpenTelemetry(options =>
     options
         .SetResourceBuilder(
             ResourceBuilder.CreateDefault()
-                .AddService(serviceName, serviceVersion: serviceVersion))
+                .AddService(Instrumentation.ServiceName, serviceVersion: Instrumentation.ServiceVersion))
         .AddOtlpExporter(options =>
         {
             options.Endpoint = new Uri($"{jaegerEndpoint}/logs");
@@ -29,8 +26,9 @@ builder.Logging.AddOpenTelemetry(options =>
         });
 });
 builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService(serviceName, serviceVersion: serviceVersion))
+    .ConfigureResource(resource => resource.AddService(Instrumentation.ServiceName, serviceVersion: Instrumentation.ServiceVersion))
     .WithTracing(tracing => tracing
+        .AddSource(Instrumentation.ServiceName)
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
         .AddConfluentKafkaInstrumentation()

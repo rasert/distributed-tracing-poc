@@ -8,12 +8,12 @@ namespace Consumer.Api
     /// </summary>
     public class Instrumentation : IDisposable
     {
-        internal const string ActivitySourceName = "consumer";
-        internal const string ActivitySourceVersion = "1.0.0";
+        public const string ServiceName = "consumer";
+        public const string ServiceVersion = "1.0.0";
 
         public Instrumentation()
         {
-            this.ActivitySource = new ActivitySource(ActivitySourceName, ActivitySourceVersion);
+            this.ActivitySource = new ActivitySource(ServiceName, ServiceVersion);
         }
 
         public ActivitySource ActivitySource { get; }
