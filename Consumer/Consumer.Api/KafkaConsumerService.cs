@@ -27,8 +27,8 @@ namespace Consumer.Api
             _httpClient = new HttpClient();
             _activitySource = instrumentation.ActivitySource;
 
-            string? persistenceHost = configuration["Persistence:Host"];
-            string? persistencePort = configuration["Persistence:Port"];
+            string? persistenceHost = configuration["PersistenceApi:Host"];
+            string? persistencePort = configuration["PersistenceApi:Port"];
             _httpClient.BaseAddress = new Uri($"http://{persistenceHost}:{persistencePort}");
         }
 
