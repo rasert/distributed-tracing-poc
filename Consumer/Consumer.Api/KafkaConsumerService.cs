@@ -50,7 +50,15 @@ namespace Consumer.Api
                             string text = result?.Message.Value ?? string.Empty;
                             _logger.LogInformation($"Consumed message '{text}' at: '{result?.TopicPartitionOffset}'.");
 
-                            activity?.AddEvent(new("Message consumed. Sending to Persistence API"));
+                            activity?.AddEvent(new("Message consumed."));
+
+                            if (text.Contains(".net error", StringComparison.OrdinalIgnoreCase))
+                            {
+                                _logger.LogWarning("Ignoring message with '.net error' substring.");
+                                return Task.CompletedTask;
+                            }
+
+                            activity?.AddEvent(new("Sending to Persistence API"));
 
                             var content = new StringContent($"{{ \"text\": \"{text}\" }}", Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync("/save-text", content, cancelToken);

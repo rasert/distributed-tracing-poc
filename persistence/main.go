@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"persistence-api/abstractions"
 	"persistence-api/repositories"
@@ -46,6 +47,11 @@ func saveTextHandler(repo abstractions.TextRepository, tracer trace.Tracer) gin.
 		}
 
 		span.AddEvent("Bind ok")
+
+		if strings.Contains(request.Text, "go error") {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Request contains 'go error'"})
+			return
+		}
 
 		// Save the text to a database
 		newDoc := &abstractions.TextDocument{Text: request.Text}

@@ -18,6 +18,10 @@ app.post('/publish-text', async (req, res) => {
   const { text } = req.body;
   if (!text) {
     return res.status(400).send('Text is required');
+  }
+
+  if (text.includes('node error')) {
+    return res.status(500).send('Text contains "node error"');
   }  
 
   try {
