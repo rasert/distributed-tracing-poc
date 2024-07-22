@@ -21,7 +21,7 @@ app.post('/publish-text', async (req, res) => {
   }  
 
   try {
-    tracer.startActiveSpan('publish-text', async (span) => {
+    tracer.startActiveSpan('manual-publish-text', async (span) => {
       span.addEvent('publishing text to Kafka', { text });
   
       await producer.send({

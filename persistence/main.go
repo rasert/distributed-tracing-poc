@@ -34,7 +34,7 @@ func main() {
 
 func saveTextHandler(repo abstractions.TextRepository, tracer trace.Tracer) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, span := tracer.Start(c.Request.Context(), "saveTextHandler")
+		ctx, span := tracer.Start(c.Request.Context(), "manual-saveTextHandler")
 		defer span.End()
 
 		var request struct {

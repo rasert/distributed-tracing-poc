@@ -45,7 +45,7 @@ namespace Consumer.Api
                         if (!cancelToken.IsCancellationRequested && result != null)
                         {
                             // This creates a Span to be sent to the OpenTelemetry Collector.
-                            using var activity = _activitySource.StartActivity("ConsumeMessage");
+                            using var activity = _activitySource.StartActivity("Manual-ConsumeMessage");
 
                             string text = result?.Message.Value ?? string.Empty;
                             _logger.LogInformation($"Consumed message '{text}' at: '{result?.TopicPartitionOffset}'.");
