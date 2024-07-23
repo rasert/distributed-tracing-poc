@@ -1,0 +1,199 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 3,
+        "panels": [],
+        "title": "Traces",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "jaeger",
+          "uid": "EbPG8fYoz"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Trace ID"
+              },
+              "properties": [
+                {
+                  "id": "links",
+                  "value": [
+                    {
+                      "title": "Show Details",
+                      "url": "/d/cdsnabj7k8934e/text-integration?var-traceId=${__value.raw}\r"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 19,
+          "x": 0,
+          "y": 1
+        },
+        "id": 1,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "11.1.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "jaeger",
+              "uid": "EbPG8fYoz"
+            },
+            "operation": "POST /publish-text",
+            "queryType": "search",
+            "refId": "A",
+            "service": "publisher"
+          }
+        ],
+        "title": "Text Integrations",
+        "type": "table"
+      },
+      {
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 10
+        },
+        "id": 2,
+        "title": "Node Graph",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "jaeger",
+          "uid": "EbPG8fYoz"
+        },
+        "gridPos": {
+          "h": 18,
+          "w": 24,
+          "x": 0,
+          "y": 11
+        },
+        "id": 4,
+        "options": {
+          "edges": {},
+          "nodes": {}
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "jaeger",
+              "uid": "EbPG8fYoz"
+            },
+            "query": "$traceId",
+            "refId": "A"
+          }
+        ],
+        "title": "Text Integration - Services & Operations",
+        "type": "nodeGraph"
+      }
+    ],
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "0fddf52c83715b7de83320c978c88827",
+            "value": "0fddf52c83715b7de83320c978c88827"
+          },
+          "hide": 2,
+          "includeAll": false,
+          "label": "Trace ID",
+          "multi": false,
+          "name": "traceId",
+          "options": [],
+          "query": "",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Text Integrations",
+    "uid": "cdsnabj7k8934e",
+    "version": 11,
+    "weekStart": ""
+  }
