@@ -138,36 +138,6 @@ services:
     volumes:
       - ./volumes/kafka/data:/var/lib/kafka/data
 
-  # schemaregistry:
-  #   container_name: schemaregistry
-  #   image: confluentinc/cp-schema-registry:5.1.2
-  #   restart: always
-  #   depends_on:
-  #     - zookeeper
-  #   environment:
-  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
-  #     SCHEMA_REGISTRY_HOST_NAME: schemaregistry
-  #     SCHEMA_REGISTRY_LISTENERS: "http://schemaregistry:8085"
-  #   ports:
-  #     - "8085:8085"
-
-  # rest-proxy:
-  #   image: confluentinc/cp-kafka-rest:7.1.1
-  #   depends_on:
-  #     - kafka1
-  #     #- schemaregistry
-  #   ports:
-  #     - 8082:8082
-  #   hostname: rest-proxy
-  #   container_name: rest-proxy
-  #   environment:
-  #     KAFKA_REST_HOST_NAME: rest-proxy
-  #     KAFKA_REST_BOOTSTRAP_SERVERS: 'kafka1:29092'
-  #     KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
-  #     #KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schemaregistry:8085'
-  #     KAFKA_REST_MAX_POLL_INTERVAL_MS: 300000
-  #     #KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS: 90000
-
   kafdrop:
     container_name: kafdrop
     image: obsidiandynamics/kafdrop:3.30.0

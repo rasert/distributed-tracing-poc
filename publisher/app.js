@@ -47,7 +47,7 @@ app.post('/publish-text', async (req, res) => {
 // Setup Kafka Producer
 const kafka = new Kafka({
   clientId: 'publisher',
-  brokers: ['kafka1:29092']
+  brokers: ['kafka1:9092']
 });
 
 const producer = kafka.producer();
